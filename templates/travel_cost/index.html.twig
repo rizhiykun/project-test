@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Расчёт стоимости путешествия{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Расчёт стоимости путешествия с учётом скидок</h1>
+        <form id="travel-cost-form">
+            <div class="mb-3">
+                <label for="baseCost" class="form-label">Базовая стоимость</label>
+                <input type="number" class="form-control" id="baseCost" name="base_cost" required>
+            </div>
+            <div class="mb-3">
+                <label for="tripStartDate" class="form-label">Дата старта путешествия</label>
+                <input type="date" class="form-control" id="tripStartDate" name="trip_start_date">
+            </div>
+            <div class="mb-3">
+                <label for="participantBirthDate" class="form-label">Дата рождения участника</label>
+                <input type="date" class="form-control" id="participantBirthDate" name="participant_birth_date" required>
+            </div>
+            <div class="mb-3">
+                <label for="paymentDate" class="form-label">Дата оплаты</label>
+                <input type="date" class="form-control" id="paymentDate" name="payment_date">
+            </div>
+            <button type="submit" class="btn btn-primary">Рассчитать</button>
+        </form>
+        <div id="result" class="mt-3"></div>
+    </div>
+
+    <script>
+        document.getElementById('travel-cost-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Собираем данные формы
+            let formData = new FormData(this);
+
+            // Подготавливаем опции для запроса
+            let requestOptions = {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                },
+            };
+
+            try {
+                // Отправляем запрос на серверный маршрут
+                let response = await fetch('/travel/calculate', requestOptions);
+                if(response.ok) {
+                    let result = await response.json();
+                    // Отображаем результат рядом с кнопкой отправки данных формы
+                    document.getElementById('result').innerText = `Результат: ${result.totalCost} Р`;
+                } else {
+                    // Обработка ошибок, если сервер вернул код ошибки
+                    console.error('Ошибка сервера', response.status);
+                    document.getElementById('result').innerText = 'Произошла ошибка при расчёте стоимости';
+                }
+            } catch(error) {
+                // Обработка ошибок сети или запроса
+                console.error('Ошибка сети или запроса', error);
+                document.getElementById('result').innerText = 'Ошибка сети или запроса';
+            }
+        });
+    </script>
+{% endblock %}
+
+
