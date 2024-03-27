@@ -17,7 +17,7 @@ class TravelCostController extends AbstractController
         $this->costCalculateService = $costCalculateService;
     }
 
-    #[Route('/travel/cost', name: 'app_travel_cost')]
+    #[Route('/', name: 'app_travel_cost')]
     public function index(): Response
     {
         return $this->render('travel_cost/index.html.twig', [
